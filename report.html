@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Factory Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #fdf6e3, #e8d7c0);
+      color: #4e342e;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 20px;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      margin-bottom: 35px;
+      color: #5d4037;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .material-symbols-rounded {
+      font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 200, 'opsz' 48;
+      vertical-align: middle;
+      font-size: 36px;
+      color: #624e46;
+    }
+
+    .glass-table {
+      width: 95%;
+      max-width: 1100px;
+      border-radius: 20px;
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 20px 28px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    th {
+      background: rgba(81, 56, 31, 0.8);
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transition: background 0.3s;
+    }
+
+    tr.overheat td {
+      color: #bf360c;
+      font-weight: bold;
+    }
+
+    tr.normal td {
+      color: #33691e;
+    }
+
+    .btn-glass {
+      margin-top: 35px;
+      padding: 14px 32px;
+      background: rgba(255, 255, 255, 0.25);
+      color: #4e342e;
+      font-weight: bold;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-glass:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      th, td {
+        padding: 12px 10px;
+        font-size: 14px;
+      }
+
+      .material-symbols-rounded {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1><span class="material-symbols-rounded">factory</span> Smart Factory Report</h1>
+
+  <div class="glass-table">
+    <table>
+      <thead>
+        <tr>
+          <th><span class="material-symbols-rounded">memory</span> Machine ID</th>
+          <th><span class="material-symbols-rounded">device_thermostat</span> Predicted Temp</th>
+          <th><span class="material-symbols-rounded">event</span> Last Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for name, data in predictions.items() %}
+          {% set value_str = data.value.replace('°C', '').strip() %}
+          {% set is_numeric = value_str.replace('.', '', 1).isdigit() %}
+          {% set temp_value = value_str | float if is_numeric else 0 %}
+          <tr class="{{ 'overheat' if temp_value > 100 else 'normal' }}">
+            <td><span class="material-symbols-rounded">memory</span> {{ name }}</td>
+            <td>
+              {% if temp_value > 100 %}
+                <span class="material-symbols-rounded" style="color:#e53935;">warning</span>
+              {% else %}
+                <span class="material-symbols-rounded" style="color:#2e7d32;">check_circle</span>
+              {% endif %}
+              {{ data.value }}
+            </td>
+            <td><span class="material-symbols-rounded">schedule</span> {{ data.timestamp }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <a href="/download" class="btn-glass">
+    <span class="material-symbols-rounded">download</span>Download Report
+  </a>
+
+</body>
+</html>
